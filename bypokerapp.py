@@ -1,0 +1,1 @@
+print("karthik is black nigga")
