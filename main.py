@@ -7,6 +7,8 @@ start = True
 w = pygame.display.set_mode((800, 800))
 clock = pygame.time.Clock()
 bigFont = pygame.font.Font("Oswald/Oswald-VariableFont_wght.ttf", 80)
+texasPicture = pygame.image.load("randomPicturesAndStuff/texas.jpg")
+texasPicture = pygame.transform.scale(texasPicture, (400, 400))
 
 running = True
 while running:
@@ -21,6 +23,9 @@ while running:
 
         titleFont = bigFont.render("TEXAS HOLD EM APP", True, (0, 0, 0))
         w.blit(titleFont, (grf.getXToCenter(titleFont, w), 100))
+        w.blit(texasPicture, ((grf.getXToCenter(texasPicture, w)), 220))
+
+
     
     pygame.display.flip()
 
