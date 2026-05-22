@@ -3,7 +3,7 @@ import pygame
 pygame.init()
 
 """
-getXToCenter({surface}, {window})
+getXToCenter({surface}, {window}, {isRect (default false)})
 return type - int
 
 gets the surface that you want to center and returns the value of the X coordinate that
@@ -28,7 +28,7 @@ def getXToCenter(surface, window, isRect=False):
 """
 getCollisionStatus({surface}, {x}, {y}, {mouseDown})
 
-function to check for mosue collisions based of the surface, the coordinates and if the mouse is down.
+function to check for mouse collisions based of the surface, the coordinates and if the mouse is down.
 returns if there is a collision between the mouse and a certain surface.
 """
 def getCollisionStatus(surface, x=int, y=int, mouseDown=bool):
@@ -43,3 +43,4 @@ def getCollisionStatus(surface, x=int, y=int, mouseDown=bool):
         return True
     else:
         return False
+    
