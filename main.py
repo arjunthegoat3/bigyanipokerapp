@@ -62,16 +62,21 @@ while running:
     if handInput:
 
         numberDrawDownX = 200
-        suitDrawDownx = 600
+        suitDrawDownX = 500
         y = 80
         
         w.blit(nextButton, (grf.getXToCenter(nextButton, w), 650))
+        w.blit(font.render("CARD #", True, (0, 0, 0)), (numberDrawDownX + 30, 90))
+        w.blit(font.render("SUIT", True, (0, 0, 0)), (suitDrawDownX + 30, 90))
+        header = font.render("Input Cards - Card # " + str(len(userHand) + 1) + " of 2", True, (0, 0, 0))
+        w.blit(header, (grf.getXToCenter(header, w), 50))
         
         #making input for the number of cards
 
         
         if not numberDrawDownClicked:
 
+            #drawing a rect to be the dropdown menu placeholder
             rect = pygame.Rect(numberDrawDownX, (y + 50), 100, 50)
             pygame.draw.rect(w, (220, 220, 220), rect)
 
@@ -86,11 +91,15 @@ while running:
 
             for i in range(0, len(allCardValues)):
 
+                
+                #Drawing a rect for each of the values in the list
+                
                 rect = pygame.Rect(numberDrawDownX, (y + (50*(i + 1))), 100, 50)
                 pygame.draw.rect(w, (200, 200, 200), rect)
                 w.blit(font.render(allCardValues[i], True, (0, 0, 0)), ((numberDrawDownX + 45), (y + 10 + (50*(i + 1)))))
                 
                 #checking to see which input the user selects and then adding that to the list of cards
+                #done for each of the rects in the dropdown menu
 
                 if grf.getCollisionStatus(rect, rect.x, y, mouseDown, True):
 
@@ -100,7 +109,7 @@ while running:
                     
                     numberDrawDownClicked = False
 
-                    
+        #adding to the list and ending the program when neccesary
         if grf.getCollisionStatus(nextButton, grf.getXToCenter(nextButton, w), 650, mouseDown) and nddPlaceholder != "-":
 
             userHand.append(nddValue)
