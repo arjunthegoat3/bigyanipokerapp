@@ -26,18 +26,23 @@ def getXToCenter(surface, window, isRect=False):
     return temp
 
 """
-getCollisionStatus({surface}, {x}, {y}, {mouseDown})
+getCollisionStatus({surface}, {x}, {y}, {mouseDown}, {isRect (default false)})
 
 function to check for mouse collisions based of the surface, the coordinates and if the mouse is down.
 returns if there is a collision between the mouse and a certain surface.
 """
-def getCollisionStatus(surface, x=int, y=int, mouseDown=bool):
+def getCollisionStatus(surface, x=int, y=int, mouseDown=bool, isRect=False):
 
     #finds the coordinate of the mouse and checks if it collides with the
     #provided surface, returns a boolean
 
     mouseCoordinate = pygame.mouse.get_pos()
-    rect = surface.get_rect(topleft = (x, y))
+
+    #creating the hitbox used for collisions
+    if not isRect:
+        rect = surface.get_rect(topleft = (x, y))
+    else:
+        rect = surface
 
     if rect.collidepoint(mouseCoordinate) and mouseDown:
         return True

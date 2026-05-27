@@ -6,6 +6,10 @@ start = True
 handInput = False
 mouseDown = False
 numberDrawDownClicked = False
+userHand = []
+communityCards = []
+allCardValues = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "J", "Q", "K"]
+nddPlaceholder = "-"
 
 w = pygame.display.set_mode((800, 800))
 clock = pygame.time.Clock()
@@ -24,13 +28,13 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-        if event.type == pygame.MOUSEBUTTONDOWN:
-
-            mouseDown = True
-
-        else:
+        if event.type == pygame.MOUSEBUTTONUP:
 
             mouseDown = False
+
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+
+            mouseDown = True
 
 
     w.fill((255, 255, 255))
@@ -56,7 +60,8 @@ while running:
 
         numberDrawDownX = 200
         suitDrawDownx = 600
-        y = 200
+        y = 120
+        
 
         
         #making input for the number of cards
@@ -64,19 +69,39 @@ while running:
         
         if not numberDrawDownClicked:
 
-            rect = pygame.Rect(numberDrawDownX, (y), 100, 50)
+            rect = pygame.Rect(numberDrawDownX, (y + 50), 100, 50)
             pygame.draw.rect(w, (220, 220, 220), rect)
 
-            w.blit(font.render("-", True, (0, 0, 0)), ((numberDrawDownX + 45), (y + 10)))
+            w.blit(font.render(nddPlaceholder, True, (0, 0, 0)), ((numberDrawDownX + 45), (y + 60)))
+
+            if grf.getCollisionStatus(rect, numberDrawDownX, y, mouseDown, True):
+
+                mouseDown = False
+                numberDrawDownClicked = True
 
         else:
 
-            for i in range(0, 9):
+            for i in range(0, len(allCardValues)):
 
                 rect = pygame.Rect(numberDrawDownX, (y + (50*(i + 1))), 100, 50)
                 pygame.draw.rect(w, (200, 200, 200), rect)
-                w.blit(font.render(str(i + 1), True, (0, 0, 0)), ((numberDrawDownX + 45), (y + 10 + (50*(i + 1)))))
+                w.blit(font.render(allCardValues[i], True, (0, 0, 0)), ((numberDrawDownX + 45), (y + 10 + (50*(i + 1)))))
+                
+                #checking to see which input the user selects and then adding that to the list of cards
 
+                if grf.getCollisionStatus(rect, rect.x, y, mouseDown, True):
+
+                    userHand.append(allCardValues[i])
+                    nddPlaceholder = allCardValues[i]
+
+                    numberDrawDownClicked = False
+
+                    if len(userHand) >= 2:
+
+                        handInput = False
+
+                
+        
     pygame.display.flip()
 
     clock.tick(60)
