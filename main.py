@@ -10,6 +10,7 @@ userHand = []
 communityCards = []
 allCardValues = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
 nddPlaceholder = "-"
+nddValue = None
 
 w = pygame.display.set_mode((800, 800))
 clock = pygame.time.Clock()
@@ -30,13 +31,13 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-        if event.type == pygame.MOUSEBUTTONUP:
-
-            mouseDown = False
-
-        elif event.type == pygame.MOUSEBUTTONDOWN:
+        if event.type == pygame.MOUSEBUTTONDOWN:
 
             mouseDown = True
+
+        else:
+
+            mouseDown = False
 
 
     w.fill((255, 255, 255))
@@ -93,18 +94,24 @@ while running:
 
                 if grf.getCollisionStatus(rect, rect.x, y, mouseDown, True):
 
-                    userHand.append(allCardValues[i])
+                    nddValue = allCardValues[i]
                     nddPlaceholder = allCardValues[i]
 
+                    
                     numberDrawDownClicked = False
 
-                    if len(userHand) >= 2:
+                    
+        if grf.getCollisionStatus(nextButton, grf.getXToCenter(nextButton, w), 650, mouseDown) and nddPlaceholder != "-":
 
-                        handInput = False
+            userHand.append(nddValue)
+            
+            if len(userHand) >= 2:
 
-        #if grf
+                handInput = False
 
-                
+            nddValue = None
+            nddPlaceholder = "-"
+            numberDrawDownClicked = False
         
     pygame.display.flip()
 
