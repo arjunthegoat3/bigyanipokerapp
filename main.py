@@ -8,7 +8,7 @@ mouseDown = False
 numberDrawDownClicked = False
 userHand = []
 communityCards = []
-allCardValues = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "J", "Q", "K"]
+allCardValues = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
 nddPlaceholder = "-"
 
 w = pygame.display.set_mode((800, 800))
@@ -19,6 +19,8 @@ texasPicture = pygame.image.load("randomPicturesAndStuff/texas.jpg")
 texasPicture = pygame.transform.scale(texasPicture, (400, 400))
 beginButton = pygame.image.load("randomPicturesAndStuff/beginButton.png")
 beginButton = pygame.transform.scale(beginButton, (150, 75))
+nextButton = pygame.image.load("randomPicturesAndStuff/nextButton.png")
+nextButton = pygame.transform.scale(nextButton, (150, 75))
 
 
 running = True
@@ -60,9 +62,9 @@ while running:
 
         numberDrawDownX = 200
         suitDrawDownx = 600
-        y = 120
+        y = 80
         
-
+        w.blit(nextButton, (grf.getXToCenter(nextButton, w), 650))
         
         #making input for the number of cards
 
@@ -99,6 +101,8 @@ while running:
                     if len(userHand) >= 2:
 
                         handInput = False
+
+        #if grf
 
                 
         
