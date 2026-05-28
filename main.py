@@ -216,7 +216,7 @@ while running:
         header = bigFont.render("AVAILABLE CARDS", True, (0, 0, 0))
         w.blit(header, (grf.getXToCenter(header, w), 60))
 
-        
+        w.blit(nextButton, (grf.getXToCenter(nextButton, w), 600))
 
         for i in range(0, len(userHand)):
 
