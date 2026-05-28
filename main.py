@@ -43,20 +43,35 @@ w = pygame.display.set_mode((1100, 950))
 
 clock = pygame.time.Clock()
 
+<<<<<<< HEAD
 bigFont = pygame.font.Font(
     "Oswald/Oswald-VariableFont_wght.ttf",
     55
 )
+=======
+bigFont = pygame.font.Font("Oswald/Oswald-VariableFont_wght.ttf", 80)
+<<<<<<< Updated upstream
+font = pygame.font.Font("Oswald/Oswald-VariableFont_wght.ttf", 20)
+>>>>>>> 0ef4d7470882cf9f4ebacfcda0e725bd7eb72d3d
 
 font = pygame.font.Font(
     "Oswald/Oswald-VariableFont_wght.ttf",
     22
 )
 
+<<<<<<< HEAD
 smallFont = pygame.font.Font(
     "Oswald/Oswald-VariableFont_wght.ttf",
     18
 )
+=======
+=======
+font = pygame.font.Font("Oswald/Oswald-VariableFont_wght.ttf", 15)
+mediumFont = pygame.font.Font("Oswald/Oswald-VariableFont_wght.ttf", 30)
+>>>>>>> Stashed changes
+texasPicture = pygame.image.load("randomPicturesAndStuff/texas.jpg")
+texasPicture = pygame.transform.scale(texasPicture, (400, 400))
+>>>>>>> 0ef4d7470882cf9f4ebacfcda0e725bd7eb72d3d
 
 # =========================================================
 # IMAGES
@@ -697,7 +712,16 @@ while running:
 
         for i in range(len(userHand)):
 
+<<<<<<< Updated upstream
             cardText = str(userHand[i])
+=======
+            w.blit(mediumFont.render("YOUR CARDS", True, (0, 0, 0)), (100, 210))
+            card = font.render(userHand[i], True, (0, 0, 0))
+            w.blit(card, (100, 250+(i*20)))
+        
+      
+    pygame.display.flip()
+>>>>>>> Stashed changes
 
             cardSurface = font.render(
                 cardText,
