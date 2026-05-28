@@ -17,12 +17,13 @@ nddPlaceholder = "-"
 nddValue = None
 sddPlaceholder = "-"
 sddValue = None
-
+viewHands = False
 
 w = pygame.display.set_mode((800, 800))
 clock = pygame.time.Clock()
 bigFont = pygame.font.Font("Oswald/Oswald-VariableFont_wght.ttf", 80)
 font = pygame.font.Font("Oswald/Oswald-VariableFont_wght.ttf", 15)
+mediumFont = pygame.font.Font("Oswald/Oswald-VariableFont_wght.ttf", 30)
 texasPicture = pygame.image.load("randomPicturesAndStuff/texas.jpg")
 texasPicture = pygame.transform.scale(texasPicture, (400, 400))
 beginButton = pygame.image.load("randomPicturesAndStuff/beginButton.png")
@@ -42,16 +43,16 @@ while running:
             running = False
 
 
-        if event.type == pygame.MOUSEBUTTONDOWN:
-
-
-            mouseDown = True
-
-
-        else:
+        if event.type == pygame.MOUSEBUTTONUP:
 
 
             mouseDown = False
+
+
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+
+
+            mouseDown = True
 
 
 
@@ -125,7 +126,7 @@ while running:
 
               
                 #Drawing a rect for each of the values in the list
-              
+                w.blit(font.render(nddPlaceholder, True, (0, 0, 0)), ((numberDrawDownX + 45), (y + 60)))
                 rect = pygame.Rect(numberDrawDownX, (y + (50*(i + 1))), 100, 50)
                 pygame.draw.rect(w, (200, 200, 200), rect)
                 w.blit(font.render(allCardValues[i], True, (0, 0, 0)), ((numberDrawDownX + 45), (y + 10 + (50*(i + 1)))))
@@ -143,6 +144,8 @@ while running:
 
                   
                     numberDrawDownClicked = False
+                    #waiting so it does not automatically double click
+                    pygame.time.wait(100)
 
         if not suitDrawDownClicked:
 
@@ -185,9 +188,11 @@ while running:
 
                   
                     suitDrawDownClicked = False
+                    #waiting so it does not automatically double click
+                    pygame.time.wait(100)
 
 
-       #adding to the list and ending the program when neccesary
+       #adding to the list and ending the section when neccesary
         if grf.getCollisionStatus(nextButton, grf.getXToCenter(nextButton, w), 650, mouseDown) and sddPlaceholder != "-" and nddPlaceholder != "-":
 
           
@@ -195,7 +200,7 @@ while running:
 
             if len(userHand) >= 2:
 
-
+                viewHands = True
                 handInput = False
 
             #resetting all variables to take input again
@@ -206,6 +211,10 @@ while running:
             numberDrawDownClicked = False
             suitDrawDownClicked = False
 
+    if viewHands:
+
+        header = bigFont.render("AVAILABLE CARDS", True, (0, 0, 0))
+        w.blit(header, (grf.getXToCenter(header, w), 60))
 
       
     pygame.display.flip()
