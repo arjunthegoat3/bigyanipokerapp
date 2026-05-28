@@ -216,6 +216,23 @@ while running:
         header = bigFont.render("AVAILABLE CARDS", True, (0, 0, 0))
         w.blit(header, (grf.getXToCenter(header, w), 60))
 
+        
+
+        for i in range(0, len(userHand)):
+
+            w.blit(mediumFont.render("YOUR HAND", True, (0, 0, 0)), (30, 200))
+            text = font.render(userHand[i], True, (0, 0, 0))
+            w.blit(text, (85, 240 + (i*30)))
+
+        if len(communityCards) > 0:
+
+            for i in range(0, len(userHand)):
+
+                w.blit(mediumFont.render("COMMUNITY CARDS", True, (0, 0, 0)), (770, 200))
+                text = font.render(communityCards[i], True, (0, 0, 0))
+                w.blit(text, (715, 240 + (i*30)))
+
+
       
     pygame.display.flip()
 
