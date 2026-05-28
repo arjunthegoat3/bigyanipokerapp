@@ -16,6 +16,7 @@ nddPlaceholder = "-"
 nddValue = None
 sddPlaceholder = "-"
 sddValue = None
+viewCards = False
 
 
 w = pygame.display.set_mode((800, 800))
@@ -194,7 +195,7 @@ while running:
 
             if len(userHand) >= 2:
 
-
+                viewCards = True
                 handInput = False
 
             #resetting all variables to take input again
@@ -205,7 +206,20 @@ while running:
             numberDrawDownClicked = False
             suitDrawDownClicked = False
 
+    if viewCards:
 
+        #This is the main screen where you can view your hand and the other hand
+
+        header = bigFont.render("AVAILABLE CARDS", True, (0, 0, 0))
+        w.blit(header, (grf.getXToCenter(header, w), 50))
+
+        #letting you view your hand
+
+        for i in range(len(userHand)):
+
+            card = font.render(userHand[i], True, (0, 0, 0))
+            w.blit(card, (100, 150+(i*20)))
+        
       
     pygame.display.flip()
 
