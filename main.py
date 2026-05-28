@@ -2,228 +2,391 @@ import pygame
 pygame.init()
 import graphicsfunctions as grf
 
+# ---------------- VARIABLES ----------------
 
 start = True
 handInput = False
-mouseDown = False
-numberDrawDownClicked = False
-suitDrawDownClicked = False
-userHand = []
-communityCards = []
-allCardValues = ["ACE", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"]
-allSuitValues = ["Spades", "Clovers", "Diamonds", "Hearts"]
-nddPlaceholder = "-"
-nddValue = None
-sddPlaceholder = "-"
-sddValue = None
 viewCards = False
 
+mouseDown = False
+
+numberDrawDownClicked = False
+suitDrawDownClicked = False
+
+userHand = []
+communityCards = []
+
+allCardValues = [
+    "ACE", "2", "3", "4", "5", "6",
+    "7", "8", "9", "10", "Jack", "Queen", "King"
+]
+
+allSuitValues = [
+    "Spades", "Clovers", "Diamonds", "Hearts"
+]
+
+nddPlaceholder = "-"
+sddPlaceholder = "-"
+
+nddValue = None
+sddValue = None
+
+# ---------------- WINDOW ----------------
 
 w = pygame.display.set_mode((800, 800))
+
 clock = pygame.time.Clock()
+
 bigFont = pygame.font.Font("Oswald/Oswald-VariableFont_wght.ttf", 80)
-font = pygame.font.Font("Oswald/Oswald-VariableFont_wght.ttf", 15)
+font = pygame.font.Font("Oswald/Oswald-VariableFont_wght.ttf", 20)
+
+# ---------------- IMAGES ----------------
+
 texasPicture = pygame.image.load("randomPicturesAndStuff/texas.jpg")
 texasPicture = pygame.transform.scale(texasPicture, (400, 400))
+
 beginButton = pygame.image.load("randomPicturesAndStuff/beginButton.png")
 beginButton = pygame.transform.scale(beginButton, (150, 75))
+
 nextButton = pygame.image.load("randomPicturesAndStuff/nextButton.png")
 nextButton = pygame.transform.scale(nextButton, (150, 75))
 
+# ---------------- POKER DECISION FUNCTION ----------------
 
+def getDecision(hand, community):
 
+    values = []
+
+    for card in hand:
+
+        values.append(card[0])
+
+    # Pocket Aces
+    if values.count("ACE") == 2:
+
+        return "RAISE"
+
+    # Any Pair
+    elif len(values) == 2 and values[0] == values[1]:
+
+        return "CALL"
+
+    # Ace King
+    elif "ACE" in values and "King" in values:
+
+        return "CALL"
+
+    # Ace Queen
+    elif "ACE" in values and "Queen" in values:
+
+        return "CALL"
+
+    else:
+
+        return "FOLD"
+
+# ---------------- MAIN LOOP ----------------
 
 running = True
+
 while running:
 
+    # RESET CLICK EACH FRAME
+    mouseDown = False
 
+    # EVENTS
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
 
+        if event.type == pygame.QUIT:
+
+            running = False
 
         if event.type == pygame.MOUSEBUTTONDOWN:
 
-
             mouseDown = True
 
-
-        else:
-
-
-            mouseDown = False
-
-
-
-
+    # BACKGROUND
     w.fill((255, 255, 255))
 
+    # =====================================================
+    # START SCREEN
+    # =====================================================
 
     if start:
 
-
-        #adding the screen elements
         titleFont = bigFont.render("TEXAS HOLD EM APP", True, (0, 0, 0))
+
         w.blit(titleFont, (grf.getXToCenter(titleFont, w), 100))
-        w.blit(texasPicture, ((grf.getXToCenter(texasPicture, w)), 220))
+
+        w.blit(texasPicture, (grf.getXToCenter(texasPicture, w), 220))
+
         w.blit(beginButton, (grf.getXToCenter(beginButton, w), 650))
 
+        # BEGIN BUTTON
+        if grf.getCollisionStatus(
+            beginButton,
+            grf.getXToCenter(beginButton, w),
+            650,
+            mouseDown
+        ):
 
-        #checking to see if to move to the next screen
-
-
-        if grf.getCollisionStatus(beginButton, grf.getXToCenter(beginButton, w), 650, mouseDown):
-
-
-            handInput = True
             start = False
+            handInput = True
 
-
-   #hand inputting section
-
+    # =====================================================
+    # HAND INPUT SCREEN
+    # =====================================================
 
     if handInput:
-
 
         numberDrawDownX = 200
         suitDrawDownX = 500
         y = 80
-      
+
+        # NEXT BUTTON
         w.blit(nextButton, (grf.getXToCenter(nextButton, w), 650))
-        w.blit(font.render("CARD #", True, (0, 0, 0)), (numberDrawDownX + 30, 90))
-        w.blit(font.render("SUIT", True, (0, 0, 0)), (suitDrawDownX + 30, 90))
-        header = font.render("Input Cards - Card # " + str(len(userHand) + 1) + " of 2", True, (0, 0, 0))
-        w.blit(header, (grf.getXToCenter(header, w), 50))
-      
-        #making input for the number of cards
 
+        # LABELS
+        w.blit(font.render("CARD #", True, (0, 0, 0)),
+               (numberDrawDownX + 20, 90))
 
-      
-        if not numberDrawDownClicked:
+        w.blit(font.render("SUIT", True, (0, 0, 0)),
+               (suitDrawDownX + 20, 90))
 
+        # HEADER TEXT
+        if len(userHand) < 2:
 
-            #drawing a rect to be the dropdown menu placeholder
-            rect = pygame.Rect(numberDrawDownX, (y + 50), 100, 50)
-            pygame.draw.rect(w, (220, 220, 220), rect)
-
-
-            w.blit(font.render(nddPlaceholder, True, (0, 0, 0)), ((numberDrawDownX + 45), (y + 60)))
-
-
-            if grf.getCollisionStatus(rect, numberDrawDownX, y, mouseDown, True):
-
-
-                mouseDown = False
-                numberDrawDownClicked = True
-
+            headerText = (
+                "Input Player Card "
+                + str(len(userHand) + 1)
+                + " of 2"
+            )
 
         else:
 
+            headerText = (
+                "Input Community Card "
+                + str(len(communityCards) + 1)
+                + " of 5"
+            )
 
-            for i in range(0, len(allCardValues)):
+        header = font.render(headerText, True, (0, 0, 0))
 
+        w.blit(header, (grf.getXToCenter(header, w), 50))
 
-              
-                #Drawing a rect for each of the values in the list
-              
-                rect = pygame.Rect(numberDrawDownX, (y + (50*(i + 1))), 100, 50)
+        # =================================================
+        # VALUE DROPDOWN
+        # =================================================
+
+        if not numberDrawDownClicked:
+
+            rect = pygame.Rect(numberDrawDownX, y + 50, 100, 50)
+
+            pygame.draw.rect(w, (220, 220, 220), rect)
+
+            valueText = font.render(nddPlaceholder, True, (0, 0, 0))
+
+            w.blit(valueText, (numberDrawDownX + 35, y + 60))
+
+            if grf.getCollisionStatus(
+                rect,
+                rect.x,
+                rect.y,
+                mouseDown,
+                True
+            ):
+
+                numberDrawDownClicked = True
+
+        else:
+
+            for i in range(len(allCardValues)):
+
+                rect = pygame.Rect(
+                    numberDrawDownX,
+                    y + (50 * (i + 1)),
+                    100,
+                    50
+                )
+
                 pygame.draw.rect(w, (200, 200, 200), rect)
-                w.blit(font.render(allCardValues[i], True, (0, 0, 0)), ((numberDrawDownX + 45), (y + 10 + (50*(i + 1)))))
-              
-                #checking to see which input the user selects and then adding that to the list of cards
-                #done for each of the rects in the dropdown menu
 
+                text = font.render(allCardValues[i], True, (0, 0, 0))
 
-                if grf.getCollisionStatus(rect, rect.x, y, mouseDown, True):
+                w.blit(
+                    text,
+                    (numberDrawDownX + 20, y + 10 + (50 * (i + 1)))
+                )
 
+                if grf.getCollisionStatus(
+                    rect,
+                    rect.x,
+                    rect.y,
+                    mouseDown,
+                    True
+                ):
 
                     nddValue = allCardValues[i]
                     nddPlaceholder = allCardValues[i]
 
-
-                  
                     numberDrawDownClicked = False
+
+        # =================================================
+        # SUIT DROPDOWN
+        # =================================================
 
         if not suitDrawDownClicked:
 
-            #drawing a rect to be the dropdown menu placeholder
-            rect = pygame.Rect(suitDrawDownX, (y + 50), 100, 50)
+            rect = pygame.Rect(suitDrawDownX, y + 50, 100, 50)
+
             pygame.draw.rect(w, (220, 220, 220), rect)
 
+            suitText = font.render(sddPlaceholder, True, (0, 0, 0))
 
-            w.blit(font.render(sddPlaceholder, True, (0, 0, 0)), ((suitDrawDownX + 45), (y + 60)))
+            w.blit(suitText, (suitDrawDownX + 15, y + 60))
 
+            if grf.getCollisionStatus(
+                rect,
+                rect.x,
+                rect.y,
+                mouseDown,
+                True
+            ):
 
-            if grf.getCollisionStatus(rect, suitDrawDownX, y, mouseDown, True):
-
-
-                mouseDown = False
                 suitDrawDownClicked = True
 
         else:
 
-            for i in range(0, len(allSuitValues)):
+            for i in range(len(allSuitValues)):
 
+                rect = pygame.Rect(
+                    suitDrawDownX,
+                    y + (50 * (i + 1)),
+                    100,
+                    50
+                )
 
-              
-                #Drawing a rect for each of the values in the list
-              
-                rect = pygame.Rect(suitDrawDownX, (y + (50*(i + 1))), 100, 50)
                 pygame.draw.rect(w, (200, 200, 200), rect)
-                w.blit(font.render(allSuitValues[i], True, (0, 0, 0)), ((suitDrawDownX + 45), (y + 10 + (50*(i + 1)))))
-              
-                #checking to see which input the user selects and then adding that to the list of cards
-                #done for each of the rects in the dropdown menu
 
+                text = font.render(allSuitValues[i], True, (0, 0, 0))
 
-                if grf.getCollisionStatus(rect, rect.x, y, mouseDown, True):
+                w.blit(
+                    text,
+                    (suitDrawDownX + 10, y + 10 + (50 * (i + 1)))
+                )
 
+                if grf.getCollisionStatus(
+                    rect,
+                    rect.x,
+                    rect.y,
+                    mouseDown,
+                    True
+                ):
 
                     sddValue = allSuitValues[i]
                     sddPlaceholder = allSuitValues[i]
 
-
-                  
                     suitDrawDownClicked = False
 
+        # =================================================
+        # NEXT BUTTON LOGIC
+        # =================================================
 
-       #adding to the list and ending the program when neccesary
-        if grf.getCollisionStatus(nextButton, grf.getXToCenter(nextButton, w), 650, mouseDown) and sddPlaceholder != "-" and nddPlaceholder != "-":
+        if grf.getCollisionStatus(
+            nextButton,
+            grf.getXToCenter(nextButton, w),
+            650,
+            mouseDown
+        ):
 
-          
-            userHand.append(sddValue + nddValue)
+            # Make sure dropdowns selected
+            if nddValue != None and sddValue != None:
 
-            if len(userHand) >= 2:
+                card = (nddValue, sddValue)
 
-                viewCards = True
-                handInput = False
+                # PLAYER HAND
+                if len(userHand) < 2:
 
-            #resetting all variables to take input again
-            nddValue = None
-            sddValue = None
-            nddPlaceholder = "-"
-            sddPlaceholder = "-"
-            numberDrawDownClicked = False
-            suitDrawDownClicked = False
+                    if card not in userHand:
+
+                        userHand.append(card)
+
+                # COMMUNITY CARDS
+                else:
+
+                    if (
+                        card not in userHand
+                        and card not in communityCards
+                    ):
+
+                        communityCards.append(card)
+
+                # RESET DROPDOWNS
+                nddValue = None
+                sddValue = None
+
+                nddPlaceholder = "-"
+                sddPlaceholder = "-"
+
+                numberDrawDownClicked = False
+                suitDrawDownClicked = False
+
+                # MOVE TO RESULTS SCREEN
+                if len(userHand) == 2 and len(communityCards) == 5:
+
+                    handInput = False
+                    viewCards = True
+
+    # =====================================================
+    # RESULTS SCREEN
+    # =====================================================
 
     if viewCards:
 
-        #This is the main screen where you can view your hand and the other hand
-
         header = bigFont.render("AVAILABLE CARDS", True, (0, 0, 0))
+
         w.blit(header, (grf.getXToCenter(header, w), 50))
 
-        #letting you view your hand
+        # DECISION
+        decision = getDecision(userHand, communityCards)
+
+        decisionText = bigFont.render(decision, True, (255, 0, 0))
+
+        w.blit(decisionText, (250, 600))
+
+        # PLAYER HAND
+        playerHeader = font.render("Player Hand", True, (0, 0, 0))
+
+        w.blit(playerHeader, (100, 120))
 
         for i in range(len(userHand)):
 
-            card = font.render(userHand[i], True, (0, 0, 0))
-            w.blit(card, (100, 150+(i*20)))
-        
-      
-    pygame.display.flip()
+            cardText = str(userHand[i])
 
+            cardSurface = font.render(cardText, True, (0, 0, 0))
+
+            w.blit(cardSurface, (100, 160 + (i * 40)))
+
+        # COMMUNITY CARDS
+        communityHeader = font.render(
+            "Community Cards",
+            True,
+            (0, 0, 0)
+        )
+
+        w.blit(communityHeader, (400, 120))
+
+        for i in range(len(communityCards)):
+
+            cardText = str(communityCards[i])
+
+            cardSurface = font.render(cardText, True, (0, 0, 0))
+
+            w.blit(cardSurface, (400, 160 + (i * 40)))
+
+    # UPDATE SCREEN
+    pygame.display.flip()
 
     clock.tick(60)
 
-
+pygame.quit()
