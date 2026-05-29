@@ -27,6 +27,7 @@ reveal3 = False
 fourthStreet = False
 fifthStreet = False
 inputtedCounter = 0
+firstTurn = True
 
 w = pygame.display.set_mode((800, 800))
 clock = pygame.time.Clock()
@@ -151,6 +152,8 @@ cardRanks = {
 
 def getDecision(hand, community):
 
+    global handInput
+
     temp = hand + community
 
     #converting all this into the format required here
@@ -193,7 +196,7 @@ def getDecision(hand, community):
     pairCount = 0
     hasTrips = False
     hasQuads = False
-
+    
     for value in counts:
 
         if counts[value] == 2:
@@ -256,7 +259,12 @@ def getDecision(hand, community):
     # -------------------------------------------------
 
     # Straight Flush
-    if straight and flush:
+
+    if firstTurn or handInput or len(temp) <= 2:
+
+        return "CALL"
+
+    elif straight and flush:
 
         return "ALL IN"
 
@@ -294,6 +302,8 @@ def getDecision(hand, community):
     elif pairCount == 1:
 
         return "CALL"
+    
+    
 
     # Strong High Cards
     elif (
@@ -342,6 +352,7 @@ while running:
 
                     inputtedCounter = 0
                     viewHands = True
+                    firstTurn = False
                     handInput = False
                     
         except:
