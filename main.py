@@ -160,6 +160,7 @@ def cardInputtingDropDowns(cardList, cardNumber):
         sddPlaceholder = "-"
         numberDrawDownClicked = False
         suitDrawDownClicked = False
+        mouseDown = False
 
     return cardList
 
@@ -253,7 +254,7 @@ while running:
                 text = font.render(communityCards[i], True, (0, 0, 0))
                 w.blit(text, (715, 240 + (i*30)))
 
-        """
+        
         #WORK IN PROGRESS DO NOT TOUCH
         if grf.getCollisionStatus(nextButton, grf.getXToCenter(nextButton, w), 650, mouseDown):
 
@@ -261,7 +262,7 @@ while running:
 
                 viewHands = False
 
-        """
+        
       
     pygame.display.flip()
 
