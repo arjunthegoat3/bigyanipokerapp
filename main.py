@@ -27,6 +27,7 @@ drawDownY = 80
 reveal3 = False
 fourthStreet = False
 fifthStreet = False
+inputtedCounter = 0
 
 w = pygame.display.set_mode((800, 800))
 clock = pygame.time.Clock()
@@ -53,11 +54,12 @@ def cardInputtingDropDowns(cardList, cardNumber):
     global nddValue
     global sddValue
     global mouseDown
+    global inputtedCounter
 
     w.blit(nextButton, (grf.getXToCenter(nextButton, w), 650))
     w.blit(font.render("CARD #", True, (0, 0, 0)), (numberDrawDownX + 30, 90))
     w.blit(font.render("SUIT", True, (0, 0, 0)), (suitDrawDownX + 30, 90))  
-    header = font.render("Input Cards - Card # " + str(len(cardList) + 1) + " of " + str(cardNumber), True, (0, 0, 0))
+    header = font.render("Input Cards - Card # " + str(inputtedCounter + 1) + " of " + str(cardNumber), True, (0, 0, 0))
     w.blit(header, (grf.getXToCenter(header, w), 50))
 
     if not numberDrawDownClicked:
@@ -155,6 +157,7 @@ def cardInputtingDropDowns(cardList, cardNumber):
 
         
         cardList.append(sddValue + nddValue)
+        inputtedCounter += 1
         
         #resetting all variables to take input again
         nddValue = None
@@ -223,6 +226,7 @@ while running:
         try:
             if len(userHand) >= 2:
 
+                    inputtedCounter = 0
                     viewHands = True
                     handInput = False
                     pygame.time.wait(150)
@@ -234,14 +238,29 @@ while running:
       
         #making input for the number of cards
 
-    
-    if reveal3:
+    if fourthStreet:
+
+        try:
+            if len(communityCards) >= 4:
+
+                    inputtedCounter = 0
+                    viewHands = True
+                    fourthStreet = False
+                    pygame.time.wait(150)
+        except:
+            None
+
+        communityCards = cardInputtingDropDowns(communityCards, 1)
+
+    elif reveal3:
 
         try:
             if len(communityCards) >= 3:
 
+                    inputtedCounter = 0
                     viewHands = True
                     reveal3 = False
+                    pygame.time.wait(150)
 
         except:
             None
@@ -274,17 +293,17 @@ while running:
         #WORK IN PROGRESS DO NOT TOUCH
         if grf.getCollisionStatus(nextButton, grf.getXToCenter(nextButton, w), 650, mouseDown):
 
-            if firstTurn:
+            if len(communityCards) == 0:
 
                 reveal3 = True
                 firstTurn = False
             
-            elif reveal3:
+            elif len(communityCards) == 3:
 
                 fourthStreet = True
                 reveal3 = False
 
-            elif fourthStreet:
+            elif len(communityCards) == 4:
 
                 fifthStreet = True
                 fourthStreet = False
