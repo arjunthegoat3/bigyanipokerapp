@@ -401,7 +401,7 @@ while running:
 
         #making decision
         decision = getDecision(userHand, communityCards)
-        decisionText = mediumFont.render(decision, True, (255, 0, 0))
+        decisionText = bigFont.render(decision, True, (255, 0, 0))
         w.blit(decisionText, (grf.getXToCenter(decisionText, w), 400))
 
         w.blit(nextButton, (grf.getXToCenter(nextButton, w), 650))
