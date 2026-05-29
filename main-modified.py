@@ -1,6 +1,7 @@
 import pygame
 pygame.init()
 import graphicsfunctions as grf
+import pokeradvisor as advisor
 
 
 start = True
@@ -33,12 +34,14 @@ clock = pygame.time.Clock()
 bigFont = pygame.font.Font("Oswald/Oswald-VariableFont_wght.ttf", 80)
 font = pygame.font.Font("Oswald/Oswald-VariableFont_wght.ttf", 15)
 mediumFont = pygame.font.Font("Oswald/Oswald-VariableFont_wght.ttf", 30)
+smallFont = pygame.font.Font("Oswald/Oswald-VariableFont_wght.ttf", 18)
 texasPicture = pygame.image.load("randomPicturesAndStuff/texas.jpg")
 texasPicture = pygame.transform.scale(texasPicture, (400, 400))
 beginButton = pygame.image.load("randomPicturesAndStuff/beginButton.png")
 beginButton = pygame.transform.scale(beginButton, (150, 75))
 nextButton = pygame.image.load("randomPicturesAndStuff/nextButton.png")
 nextButton = pygame.transform.scale(nextButton, (150, 75))
+
 
 def cardInputtingDropDowns(cardList, cardNumber):
 
@@ -57,11 +60,9 @@ def cardInputtingDropDowns(cardList, cardNumber):
 
     w.blit(nextButton, (grf.getXToCenter(nextButton, w), 650))
     w.blit(font.render("CARD #", True, (0, 0, 0)), (numberDrawDownX + 30, 90))
-
-    w.blit(font.render("SUIT", True, (0, 0, 0)), (suitDrawDownX + 30, 90))  
+    w.blit(font.render("SUIT", True, (0, 0, 0)), (suitDrawDownX + 30, 90))
     header = font.render("Input Cards - Card # " + str(inputtedCounter + 1) + " of " + str(cardNumber), True, (0, 0, 0))
     w.blit(header, (grf.getXToCenter(header, w), 50))
-
 
     if not numberDrawDownClicked:
 
@@ -69,7 +70,7 @@ def cardInputtingDropDowns(cardList, cardNumber):
         pygame.draw.rect(w, (220, 220, 220), rect)
         w.blit(font.render(nddPlaceholder, True, (0, 0, 0)), ((numberDrawDownX + 45), (drawDownY + 60)))
 
-        if grf.getCollisionStatus(rect, rect.x, rect.y, mouseDown, True):
+        if grf.getCollisionStatus(rect, numberDrawDownX, drawDownY, mouseDown, True):
             mouseDown = False
             numberDrawDownClicked = True
 
@@ -81,7 +82,7 @@ def cardInputtingDropDowns(cardList, cardNumber):
             pygame.draw.rect(w, (200, 200, 200), rect)
             w.blit(font.render(allCardValues[i], True, (0, 0, 0)), ((numberDrawDownX + 45), (drawDownY + 10 + (50*(i + 1)))))
 
-            if grf.getCollisionStatus(rect, rect.x, rect.y, mouseDown, True):
+            if grf.getCollisionStatus(rect, rect.x, drawDownY, mouseDown, True):
                 nddValue = allCardValues[i]
                 nddPlaceholder = allCardValues[i]
                 numberDrawDownClicked = False
@@ -93,7 +94,7 @@ def cardInputtingDropDowns(cardList, cardNumber):
         pygame.draw.rect(w, (220, 220, 220), rect)
         w.blit(font.render(sddPlaceholder, True, (0, 0, 0)), ((suitDrawDownX + 45), (drawDownY + 60)))
 
-        if grf.getCollisionStatus(rect, rect.x, rect.y, mouseDown, True):
+        if grf.getCollisionStatus(rect, suitDrawDownX, drawDownY, mouseDown, True):
             mouseDown = False
             suitDrawDownClicked = True
 
@@ -104,7 +105,7 @@ def cardInputtingDropDowns(cardList, cardNumber):
             pygame.draw.rect(w, (200, 200, 200), rect)
             w.blit(font.render(allSuitValues[i], True, (0, 0, 0)), ((suitDrawDownX + 45), (drawDownY + 10 + (50*(i + 1)))))
 
-            if grf.getCollisionStatus(rect, rect.x, rect.y, mouseDown, True):
+            if grf.getCollisionStatus(rect, rect.x, drawDownY, mouseDown, True):
                 sddValue = allSuitValues[i]
                 sddPlaceholder = allSuitValues[i]
                 suitDrawDownClicked = False
@@ -112,11 +113,9 @@ def cardInputtingDropDowns(cardList, cardNumber):
 
     if grf.getCollisionStatus(nextButton, grf.getXToCenter(nextButton, w), 650, mouseDown) and sddPlaceholder != "-" and nddPlaceholder != "-":
 
-
         cardList.append(sddValue + nddValue)
         inputtedCounter += 1
-        
-        #resetting all variables to take input again
+
         nddValue = None
         sddValue = None
         nddPlaceholder = "-"
@@ -128,186 +127,77 @@ def cardInputtingDropDowns(cardList, cardNumber):
     return cardList
 
 
+def draw_advisor_panel(user_hand, community_cards):
+    """
+    Draws the advisor box in the centre of the viewHands screen.
+    Occupies roughly x=220..580, y=330..620.
+    """
+    if len(user_hand) < 2:
+        return
 
-cardRanks = {
-    "A": 14,
-    "K": 13,
-    "Q": 12,
-    "J": 11,
-    "10": 10,
-    "9": 9,
-    "8": 8,
-    "7": 7,
-    "6": 6,
-    "5": 5,
-    "4": 4,
-    "3": 3,
-    "2": 2
-}
+    advice = advisor.get_advice(user_hand, community_cards)
 
-# =========================================================
-# POKER HAND ANALYZER
-# =========================================================
+    panel_rect = pygame.Rect(210, 330, 380, 280)
 
-def getDecision(hand, community):
+    # Shadow
+    shadow = pygame.Rect(panel_rect.x + 4, panel_rect.y + 4, panel_rect.w, panel_rect.h)
+    pygame.draw.rect(w, (180, 180, 180), shadow, border_radius=12)
 
-    temp = hand + community
+    # Panel background
+    pygame.draw.rect(w, (30, 30, 40), panel_rect, border_radius=12)
+    pygame.draw.rect(w, (100, 100, 120), panel_rect, width=2, border_radius=12)
 
-    #converting all this into the format required here
+    # ── Hand name ────────────────────────────────────────────────────────
+    strength_color = advisor.get_strength_color(advice["strength"])
+    hand_surf = mediumFont.render(advice["hand_name"], True, strength_color)
+    w.blit(hand_surf, (panel_rect.centerx - hand_surf.get_width() // 2, panel_rect.y + 14))
 
-    allCards = []
-    values = []
-    suits = []
-    for card in temp:
+    # ── Strength label ───────────────────────────────────────────────────
+    strength_surf = smallFont.render("Strength: " + advice["strength"], True, strength_color)
+    w.blit(strength_surf, (panel_rect.centerx - strength_surf.get_width() // 2, panel_rect.y + 52))
 
-        stemp = card[0]
-        ntemp = card[1:]
+    # ── Divider ──────────────────────────────────────────────────────────
+    pygame.draw.line(w, (100, 100, 120),
+                     (panel_rect.x + 20, panel_rect.y + 78),
+                     (panel_rect.right - 20, panel_rect.y + 78), 1)
 
-        suits.append(stemp)
-        values.append(ntemp)
+    # ── Action recommendation ─────────────────────────────────────────────
+    action_color = advisor.get_action_color(advice["action"])
+    action_bg    = pygame.Rect(panel_rect.x + 30, panel_rect.y + 90, panel_rect.w - 60, 46)
+    pygame.draw.rect(w, action_color, action_bg, border_radius=8)
+    action_surf = mediumFont.render(advice["action"], True, (255, 255, 255))
+    w.blit(action_surf, (action_bg.centerx - action_surf.get_width() // 2,
+                          action_bg.centery - action_surf.get_height() // 2))
 
-        allCards.append((stemp, ntemp))
-
-    rankNumbers = []
-
-    for value in values:
-
-        rankNumbers.append(cardRanks[value])
-
-    # -------------------------------------------------
-    # COUNT PAIRS / TRIPS
-    # -------------------------------------------------
-
-    counts = {}
-
-    for value in values:
-
-        if value not in counts:
-
-            counts[value] = 1
-
+    # ── Reason (word-wrapped manually) ───────────────────────────────────
+    reason = advice["reason"]
+    words  = reason.split()
+    lines  = []
+    line   = ""
+    for word in words:
+        test = (line + " " + word).strip()
+        if font.size(test)[0] <= panel_rect.w - 40:
+            line = test
         else:
+            if line:
+                lines.append(line)
+            line = word
+    if line:
+        lines.append(line)
 
-            counts[value] += 1
+    y_off = panel_rect.y + 150
+    for ln in lines:
+        surf = font.render(ln, True, (210, 210, 210))
+        w.blit(surf, (panel_rect.centerx - surf.get_width() // 2, y_off))
+        y_off += 22
 
-    pairCount = 0
-    hasTrips = False
-    hasQuads = False
+    # ── Best cards used ──────────────────────────────────────────────────
+    if len(community_cards) >= 3 and advice["best_cards"]:
+        cards_label = font.render("Best hand: " + "  ".join(advice["best_cards"]), True, (160, 160, 200))
+        w.blit(cards_label, (panel_rect.centerx - cards_label.get_width() // 2, panel_rect.bottom - 30))
 
-    for value in counts:
 
-        if counts[value] == 2:
-
-            pairCount += 1
-
-        elif counts[value] == 3:
-
-            hasTrips = True
-
-        elif counts[value] == 4:
-
-            hasQuads = True
-
-    # -------------------------------------------------
-    # FLUSH CHECK
-    # -------------------------------------------------
-
-    flush = False
-
-    for suit in allSuitValues:
-
-        if suits.count(suit) >= 5:
-
-            flush = True
-
-    # -------------------------------------------------
-    # STRAIGHT CHECK
-    # -------------------------------------------------
-
-    straight = False
-
-    uniqueRanks = list(set(rankNumbers))
-
-    uniqueRanks.sort()
-
-    # ace low straight
-    if 14 in uniqueRanks:
-
-        uniqueRanks.insert(0, 1)
-
-    streak = 1
-
-    for i in range(len(uniqueRanks) - 1):
-
-        if uniqueRanks[i + 1] == uniqueRanks[i] + 1:
-
-            streak += 1
-
-            if streak >= 5:
-
-                straight = True
-
-        else:
-
-            streak = 1
-
-    # -------------------------------------------------
-    # HAND STRENGTH
-    # -------------------------------------------------
-
-    # Straight Flush
-    if straight and flush:
-
-        return "ALL IN"
-
-    # Four of a Kind
-    elif hasQuads:
-
-        return "RAISE"
-
-    # Full House
-    elif hasTrips and pairCount >= 1:
-
-        return "RAISE"
-
-    # Flush
-    elif flush:
-
-        return "RAISE"
-
-    # Straight
-    elif straight:
-
-        return "RAISE"
-
-    # Three of a Kind
-    elif hasTrips:
-
-        return "CALL"
-
-    # Two Pair
-    elif pairCount >= 2:
-
-        return "CALL"
-
-    # One Pair
-    elif pairCount == 1:
-
-        return "CALL"
-
-    # Strong High Cards
-    elif (
-        ("A" in values and "K" in values)
-        or ("A" in values and "Q" in values)
-        or ("K" in values and "Q" in values)
-    ):
-
-        return "CALL"
-
-    else:
-
-        return "FOLD"
-
+# ── Main loop ─────────────────────────────────────────────────────────────────
 
 running = True
 while running:
@@ -328,7 +218,7 @@ while running:
 
         titleFont = bigFont.render("TEXAS HOLD EM APP", True, (0, 0, 0))
         w.blit(titleFont, (grf.getXToCenter(titleFont, w), 100))
-        w.blit(texasPicture, (grf.getXToCenter(texasPicture, w), 220))
+        w.blit(texasPicture, ((grf.getXToCenter(texasPicture, w)), 220))
         w.blit(beginButton, (grf.getXToCenter(beginButton, w), 650))
 
         if grf.getCollisionStatus(beginButton, grf.getXToCenter(beginButton, w), 650, mouseDown):
@@ -339,40 +229,23 @@ while running:
 
         try:
             if len(userHand) >= 2:
-
-                    inputtedCounter = 0
-                    viewHands = True
-                    handInput = False
-                    
+                inputtedCounter = 0
+                viewHands = True
+                handInput = False
+                pygame.time.wait(150)
         except:
             None
 
         userHand = cardInputtingDropDowns(userHand, 2)
 
-    if fifthStreet:
-
-        try:
-            if len(communityCards) >= 5:
-
-                    inputtedCounter = 0
-                    viewHands = True
-                    fifthStreet = False
-                    
-        except:
-            None
-
-        communityCards = cardInputtingDropDowns(communityCards, 1)
-
-    
     if fourthStreet:
 
         try:
             if len(communityCards) >= 4:
-
-                    inputtedCounter = 0
-                    viewHands = True
-                    fourthStreet = False
-                    
+                inputtedCounter = 0
+                viewHands = True
+                fourthStreet = False
+                pygame.time.wait(150)
         except:
             None
 
@@ -382,12 +255,10 @@ while running:
 
         try:
             if len(communityCards) >= 3:
-
-                    inputtedCounter = 0
-                    viewHands = True
-                    reveal3 = False
-                    
-
+                inputtedCounter = 0
+                viewHands = True
+                reveal3 = False
+                pygame.time.wait(150)
         except:
             None
 
@@ -395,50 +266,42 @@ while running:
 
     if viewHands:
 
-        #adding text elements
         header = bigFont.render("AVAILABLE CARDS", True, (0, 0, 0))
         w.blit(header, (grf.getXToCenter(header, w), 60))
 
-        #making decision
-        decision = getDecision(userHand, communityCards)
-        decisionText = mediumFont.render(decision, True, (255, 0, 0))
-        w.blit(decisionText, (grf.getXToCenter(decisionText, w), 400))
+        w.blit(nextButton, (grf.getXToCenter(nextButton, w), 700))
 
-        w.blit(nextButton, (grf.getXToCenter(nextButton, w), 650))
-
+        # ── Your hand (left column) ───────────────────────────────────────
         for i in range(0, len(userHand)):
             w.blit(mediumFont.render("YOUR HAND", True, (0, 0, 0)), (30, 200))
             text = font.render(userHand[i], True, (0, 0, 0))
-            w.blit(text, (85, 240 + (i*30)))
+            w.blit(text, (85, 240 + (i * 30)))
 
+        # ── Community cards (right column) ────────────────────────────────
         if len(communityCards) > 0:
             for i in range(0, len(communityCards)):
-                w.blit(mediumFont.render("COMMUNITY CARDS", True, (0, 0, 0)), (570, 200))
+                w.blit(mediumFont.render("COMMUNITY", True, (0, 0, 0)), (580, 200))
+                w.blit(mediumFont.render("CARDS", True, (0, 0, 0)), (610, 230))
                 text = font.render(communityCards[i], True, (0, 0, 0))
-                w.blit(text, (675, 240 + (i*30)))
+                w.blit(text, (640, 270 + (i * 30)))
 
-        
-        #going to the next input besed on the number of cards
-        if grf.getCollisionStatus(nextButton, grf.getXToCenter(nextButton, w), 650, mouseDown):
+        # ── Advisor panel (centre) ────────────────────────────────────────
+        draw_advisor_panel(userHand, communityCards)
+
+        # ── Next button logic (unchanged) ─────────────────────────────────
+        if grf.getCollisionStatus(nextButton, grf.getXToCenter(nextButton, w), 700, mouseDown):
 
             if len(communityCards) == 0:
-
                 reveal3 = True
                 firstTurn = False
-            
-            elif len(communityCards) == 3:
 
+            elif len(communityCards) == 3:
                 fourthStreet = True
                 reveal3 = False
 
             elif len(communityCards) == 4:
-
                 fifthStreet = True
                 fourthStreet = False
-
-            elif len(communityCards) == 5:
-
-                running = False
 
             viewHands = False
 
