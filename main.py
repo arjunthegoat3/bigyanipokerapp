@@ -24,6 +24,9 @@ thirdTurn = False
 numberDrawDownX = 200
 suitDrawDownX = 500
 drawDownY = 80
+reveal3 = False
+fourthStreet = False
+fifthStreet = False
 
 w = pygame.display.set_mode((800, 800))
 clock = pygame.time.Clock()
@@ -260,7 +263,20 @@ while running:
 
             if firstTurn:
 
-                viewHands = False
+                reveal3 = True
+                firstTurn = False
+            
+            elif reveal3:
+
+                fourthStreet = True
+                reveal3 = False
+
+            elif fourthStreet:
+
+                fifthStreet = True
+                fourthStreet = False
+
+            viewHands = False
 
         
       
