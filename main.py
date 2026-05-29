@@ -172,6 +172,179 @@ def cardInputtingDropDowns(cardList, cardNumber):
 
 
 
+cardRanks = {
+    "A": 14,
+    "K": 13,
+    "Q": 12,
+    "J": 11,
+    "10": 10,
+    "9": 9,
+    "8": 8,
+    "7": 7,
+    "6": 6,
+    "5": 5,
+    "4": 4,
+    "3": 3,
+    "2": 2
+}
+
+# =========================================================
+# POKER HAND ANALYZER
+# =========================================================
+
+def getDecision(hand, community):
+
+    allCards = hand + community
+
+    values = []
+    suits = []
+
+    for card in allCards:
+
+        values.append(card[0])
+        suits.append(card[1])
+
+    rankNumbers = []
+
+    for value in values:
+
+        rankNumbers.append(cardRanks[value])
+
+    # -------------------------------------------------
+    # COUNT PAIRS / TRIPS
+    # -------------------------------------------------
+
+    counts = {}
+
+    for value in values:
+
+        if value not in counts:
+
+            counts[value] = 1
+
+        else:
+
+            counts[value] += 1
+
+    pairCount = 0
+    hasTrips = False
+    hasQuads = False
+
+    for value in counts:
+
+        if counts[value] == 2:
+
+            pairCount += 1
+
+        elif counts[value] == 3:
+
+            hasTrips = True
+
+        elif counts[value] == 4:
+
+            hasQuads = True
+
+    # -------------------------------------------------
+    # FLUSH CHECK
+    # -------------------------------------------------
+
+    flush = False
+
+    for suit in allSuitValues:
+
+        if suits.count(suit) >= 5:
+
+            flush = True
+
+    # -------------------------------------------------
+    # STRAIGHT CHECK
+    # -------------------------------------------------
+
+    straight = False
+
+    uniqueRanks = list(set(rankNumbers))
+
+    uniqueRanks.sort()
+
+    # ace low straight
+    if 14 in uniqueRanks:
+
+        uniqueRanks.insert(0, 1)
+
+    streak = 1
+
+    for i in range(len(uniqueRanks) - 1):
+
+        if uniqueRanks[i + 1] == uniqueRanks[i] + 1:
+
+            streak += 1
+
+            if streak >= 5:
+
+                straight = True
+
+        else:
+
+            streak = 1
+
+    # -------------------------------------------------
+    # HAND STRENGTH
+    # -------------------------------------------------
+
+    # Straight Flush
+    if straight and flush:
+
+        return "ALL IN"
+
+    # Four of a Kind
+    elif hasQuads:
+
+        return "RAISE"
+
+    # Full House
+    elif hasTrips and pairCount >= 1:
+
+        return "RAISE"
+
+    # Flush
+    elif flush:
+
+        return "RAISE"
+
+    # Straight
+    elif straight:
+
+        return "RAISE"
+
+    # Three of a Kind
+    elif hasTrips:
+
+        return "CALL"
+
+    # Two Pair
+    elif pairCount >= 2:
+
+        return "CALL"
+
+    # One Pair
+    elif pairCount == 1:
+
+        return "CALL"
+
+    # Strong High Cards
+    elif (
+        ("A" in values and "K" in values)
+        or ("A" in values and "Q" in values)
+        or ("K" in values and "Q" in values)
+    ):
+
+        return "CALL"
+
+    else:
+
+        return "FOLD"
+
+
 running = True
 while running:
 
@@ -238,6 +411,21 @@ while running:
       
         #making input for the number of cards
 
+    if fifthStreet:
+
+        try:
+            if len(communityCards) >= 5:
+
+                    inputtedCounter = 0
+                    viewHands = True
+                    fifthStreet = False
+                    pygame.time.wait(150)
+        except:
+            None
+
+        communityCards = cardInputtingDropDowns(communityCards, 1)
+
+    
     if fourthStreet:
 
         try:
@@ -270,8 +458,14 @@ while running:
 
     if viewHands:
 
+        #adding text elements
         header = bigFont.render("AVAILABLE CARDS", True, (0, 0, 0))
         w.blit(header, (grf.getXToCenter(header, w), 60))
+
+        #making decision
+        decision = getDecision(userHand, communityCards)
+        decisionText = font.render(decision, True, (255, 0, 0))
+        w.blit(decisionText, (grf.getXToCenter(decisionText, w), 400))
 
         w.blit(nextButton, (grf.getXToCenter(nextButton, w), 650))
 
@@ -290,7 +484,7 @@ while running:
                 w.blit(text, (675, 240 + (i*30)))
 
         
-        #WORK IN PROGRESS DO NOT TOUCH
+        #going to the next input besed on the number of cards
         if grf.getCollisionStatus(nextButton, grf.getXToCenter(nextButton, w), 650, mouseDown):
 
             if len(communityCards) == 0:
@@ -307,6 +501,10 @@ while running:
 
                 fifthStreet = True
                 fourthStreet = False
+
+            elif len(communityCards) == 5:
+
+                running = False
 
             viewHands = False
 
