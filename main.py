@@ -234,6 +234,19 @@ while running:
       
         #making input for the number of cards
 
+    
+    if reveal3:
+
+        try:
+            if len(communityCards) >= 3:
+
+                    viewHands = True
+                    reveal3 = False
+
+        except:
+            None
+
+        communityCards = cardInputtingDropDowns(communityCards, 3)
         
 
     if viewHands:
@@ -251,11 +264,11 @@ while running:
 
         if len(communityCards) > 0:
 
-            for i in range(0, len(userHand)):
+            for i in range(0, len(communityCards)):
 
-                w.blit(mediumFont.render("COMMUNITY CARDS", True, (0, 0, 0)), (770, 200))
+                w.blit(mediumFont.render("COMMUNITY CARDS", True, (0, 0, 0)), (570, 200))
                 text = font.render(communityCards[i], True, (0, 0, 0))
-                w.blit(text, (715, 240 + (i*30)))
+                w.blit(text, (675, 240 + (i*30)))
 
         
         #WORK IN PROGRESS DO NOT TOUCH
